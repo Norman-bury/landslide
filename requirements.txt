@@ -1,0 +1,25 @@
+# DINOv3-LoRA-Mask2Former 滑坡检测 — 依赖
+# 安装: pip install -r requirements.txt
+
+# PyTorch (需 CUDA 版本, 见 https://pytorch.org/get-started/locally/)
+torch==2.5.1
+torchvision==0.20.1
+
+# DINOv3 backbone (需 transformers >= 4.56.0 才支持 dinov3_vit)
+transformers==4.57.6
+peft==0.17.1
+
+# Mask2Former 损失函数 (Hungarian Matching 需要 scipy)
+scipy==1.13.1
+
+# 数据处理
+numpy==1.26.4
+Pillow==11.1.0
+albumentations==2.0.8
+rasterio==1.4.3
+
+# 训练 & 评测
+tqdm==4.67.3
+tensorboard==2.18.0
+pyyaml==6.0.3
+matplotlib==3.9.4

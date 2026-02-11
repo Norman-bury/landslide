@@ -1,0 +1,66 @@
+# ============================================================
+#  DINOv3-LoRA-Mask2Former 滑坡检测 — Git 忽略规则
+#  只上传: src/, configs/, scripts/, docs, requirements.txt
+# ============================================================
+
+# ----- 数据集 (太大, 不上传) -----
+landslide_/
+landslide_detr/
+
+# ----- 预训练模型权重 (太大, 不上传) -----
+dinov3-vitl16-pretrain-sat493m/
+dinov3/
+mask2former-swin-large-coco-panoptic/
+pretrained/
+*.bin
+*.safetensors
+*.ckpt
+
+# ----- 训练输出 -----
+outputs/
+*.pth
+train.log
+nohup.out
+
+# ----- 参考代码 (不属于本项目) -----
+Mask2Former/
+
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ----- Jupyter -----
+.ipynb_checkpoints/
+
+# ----- 环境 -----
+.env
+.venv/
+env/
+venv/
+
+# ----- IDE -----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ----- macOS -----
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ----- 压缩包 -----
+*.zip
+*.tar.gz
+*.rar
+
+# ----- 其他 -----
+部署看.txt

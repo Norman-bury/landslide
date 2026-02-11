@@ -1,0 +1,88 @@
+# DINOv3-LoRA-Mask2Former 滑坡检测 — 服务器训练配置
+# 适用于 80GB 显存 GPU (A100/H100)
+
+# 模型配置
+model:
+  backbone:
+    name: "dinov3-vitl16-pretrain-sat493m"    # 本地卫星预训练模型 (ViT-L/16, 1024维, 300M参数)
+    freeze: true
+    image_size: 512                           # 16的整数倍
+    out_indices: [5, 11, 17, 23]              # ViT-L 24层, 取4个中间层
+    norm_type: "sat"                          # 卫星预训练归一化 mean=(0.430,0.411,0.296) std=(0.213,0.156,0.143)
+
+  lora:
+    enabled: true
+    rank: 16
+    alpha: 32
+    dropout: 0.1
+    target_modules: ["q_proj", "v_proj"]
+    lora_layers: [20, 21, 22, 23]            # 只在最后4层插入LoRA (ViT-L共24层)
+
+  segmentor:
+    num_classes: 2
+    num_queries: 100
+    hidden_dim: 256
+    num_decoder_layers: 9                   # 官方 Mask2Former 默认 9 层
+    nheads: 8
+    dim_feedforward: 2048
+    mask_dim: 256
+    pre_norm: false
+
+# 数据配置
+data:
+  dataset_root: "landslide_"
+
+  bijie:
+    root: "Bijie_landslide_dataset/Bijie-landslide-dataset"
+    image_dir: "image"
+    mask_dir: "mask"
+    train_ratio: 0.8
+    val_ratio: 0.2
+
+  moxizhen:
+    root: "moxizhen/moxizhen"
+    image_dir: "img"
+    label_dir: "label"
+
+  image_size: 512
+  batch_size: 24                              # 80GB A100, ViT-L+9层decoder, 512x512 → batch 24 (~70GB)
+  num_workers: 8
+
+# 训练配置
+training:
+  epochs: 100
+  optimizer:
+    name: "adamw"
+    lr: 1.0e-4
+    weight_decay: 0.01
+  scheduler:
+    name: "cosine"
+    warmup_epochs: 5
+    min_lr: 1.0e-6
+  loss:
+    ce_weight: 5.0
+    mask_weight: 5.0
+    dice_weight: 5.0
+    eos_coef: 0.1
+    cost_class: 2.0
+    cost_mask: 5.0
+    cost_dice: 5.0
+    num_points: 12544
+    oversample_ratio: 3.0
+    importance_sample_ratio: 0.75
+  gradient_accumulation_steps: 1               # 80GB单卡不需要梯度累积, 实际 batch=24
+  amp: true                                   # GPU混合精度
+  early_stopping_patience: 15                 # 15个epoch无提升则停止
+
+# 评测配置
+evaluation:
+  metrics: ["miou", "f1", "precision", "recall"]
+
+# 设备配置
+device: "auto"
+
+# 输出配置
+output:
+  dir: "outputs"
+  save_every: 10
+  log_every: 10
